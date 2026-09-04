@@ -17,7 +17,7 @@ Open your game. Boost kicks in. Quit when you’re done.
 
 </div>
 
-![Stop Stutter native macOS interface](docs/overview.jpg)
+![Stop Stutter native macOS interface](docs/overview.png)
 
 **Good signal. Plenty of bandwidth. Video still hitching every few seconds?** Your Mac’s peer-to-peer Wi-Fi may be getting in the way of your stream. When AWDL is the cause, turning it off can reduce latency spikes, uneven frame delivery, and audio interruptions. The issue has been [reported by Moonlight users for years](https://github.com/moonlight-stream/moonlight-qt/issues/753).
 
