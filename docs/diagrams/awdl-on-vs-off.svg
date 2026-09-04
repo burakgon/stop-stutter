@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="790" viewBox="0 0 1280 790" role="img" aria-labelledby="title desc">
+<title id="title">AWDL on versus AWDL off with Boost</title>
+<desc id="desc">Conceptual comparison of one Mac Wi-Fi radio. With Boost off, active AWDL can share radio time with router traffic, including channel switches. With Boost on, Stop Stutter repeatedly disables awdl0, removing this source of contention. AWDL being up does not mean continuous transmission. This is not a performance measurement.</desc>
+<rect width="1280" height="790" fill="#081417"/>
+<text x="40" y="43" fill="#54e5be" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="650" text-anchor="start">01  /  THE RADIO</text>
+<text x="1240" y="43" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" text-anchor="end">STOP STUTTER</text>
+<text x="40" y="105" fill="#effaf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="46" font-weight="700" text-anchor="start">Same Wi-Fi. Less contention.</text>
+<text x="40" y="146" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="23" font-weight="400" text-anchor="start">Boost targets a source of stutter that a faster internet plan may not fix.</text>
+<rect x="40" y="181" width="584" height="462" rx="24" fill="#101f24" stroke="#294047"/>
+<circle cx="74" cy="219" r="6" fill="#ffc47c" stroke="none" stroke-width="2"/>
+<text x="93" y="228" fill="#ffc47c" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="25" font-weight="700" text-anchor="start">BOOST OFF</text>
+<text x="68" y="269" fill="#a8bec3" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21" font-weight="400" text-anchor="start">AWDL ON  /  awdl0 UP</text>
+<line x1="68" y1="291" x2="596" y2="291" stroke="#294047" stroke-width="2" stroke-linecap="round"/>
+<rect x="93" y="352" width="54" height="26" rx="6" fill="none" stroke="#81baff"/>
+<line x1="102" y1="352" x2="102" y2="336" stroke="#81baff" stroke-width="3" stroke-linecap="round"/>
+<line x1="138" y1="352" x2="138" y2="336" stroke="#81baff" stroke-width="3" stroke-linecap="round"/>
+<circle cx="108" cy="365" r="2" fill="#81baff" stroke="none" stroke-width="2"/>
+<circle cx="120" cy="365" r="2" fill="#81baff" stroke="none" stroke-width="2"/>
+<circle cx="132" cy="365" r="2" fill="#81baff" stroke="none" stroke-width="2"/>
+<rect x="295" y="328" width="74" height="47" rx="5" fill="none" stroke="#effaf8"/>
+<path d="M 287 383 H 377 L 369 375 H 295 Z" fill="none" stroke="#effaf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 315 346 Q 332 330 349 346" fill="none" stroke="#54e5be" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 322 354 Q 332 344 342 354" fill="none" stroke="#54e5be" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="332" cy="362" r="2.5" fill="#54e5be" stroke="none" stroke-width="2"/>
+<rect x="520" y="335" width="31" height="48" rx="6" fill="none" stroke="#ffc47c"/>
+<rect x="545" y="345" width="25" height="38" rx="5" fill="#101f24" stroke="#ffc47c"/>
+<line x1="529" y1="376" x2="537" y2="376" stroke="#ffc47c" stroke-width="2" stroke-linecap="round"/>
+<circle cx="557" cy="376" r="1.5" fill="#ffc47c" stroke="none" stroke-width="2"/>
+<line x1="165" y1="353" x2="273" y2="353" stroke="#81baff" stroke-width="3" stroke-linecap="round"/>
+<path d="M 265 347 L 273 353 L 265 359" fill="none" stroke="#81baff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="391" y1="353" x2="502" y2="353" stroke="#ffc47c" stroke-width="3" stroke-linecap="round"/>
+<path d="M 494 347 L 502 353 L 494 359" fill="none" stroke="#ffc47c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="120" y="414" fill="#81baff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" text-anchor="middle">Router</text>
+<text x="332" y="414" fill="#effaf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" text-anchor="middle">One Mac radio</text>
+<text x="544" y="414" fill="#ffc47c" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="500" text-anchor="middle">Nearby peers</text>
+<text x="68" y="473" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="600" text-anchor="start">ILLUSTRATIVE RADIO TIME</text>
+<rect x="68" y="493" width="154" height="43" rx="8" fill="#173651" stroke="none"/>
+<text x="145.0" y="522" fill="#81baff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="600" text-anchor="middle">Router</text>
+<rect x="228" y="493" width="92" height="43" rx="8" fill="#423325" stroke="none"/>
+<text x="274.0" y="522" fill="#ffc47c" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="600" text-anchor="middle">AWDL</text>
+<rect x="326" y="493" width="104" height="43" rx="8" fill="#173651" stroke="none"/>
+<text x="378.0" y="522" fill="#81baff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="600" text-anchor="middle">Router</text>
+<rect x="436" y="493" width="92" height="43" rx="8" fill="#423325" stroke="none"/>
+<text x="482.0" y="522" fill="#ffc47c" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="600" text-anchor="middle">AWDL</text>
+<rect x="534" y="493" width="62" height="43" rx="8" fill="#173651" stroke="none"/>
+<text x="565.0" y="522" fill="#81baff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="600" text-anchor="middle">…</text>
+<text x="68" y="582" fill="#effaf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="600" text-anchor="start">AWDL activity can make packets wait.</text>
+<text x="68" y="615" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="400" text-anchor="start">Especially when it uses another channel.</text>
+<rect x="656" y="181" width="584" height="462" rx="24" fill="#101f24" stroke="#294047"/>
+<circle cx="690" cy="219" r="6" fill="#54e5be" stroke="none" stroke-width="2"/>
+<text x="709" y="228" fill="#54e5be" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="25" font-weight="700" text-anchor="start">BOOST ON</text>
+<text x="684" y="269" fill="#a8bec3" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21" font-weight="400" text-anchor="start">AWDL OFF  /  awdl0 DOWN</text>
+<line x1="684" y1="291" x2="1212" y2="291" stroke="#294047" stroke-width="2" stroke-linecap="round"/>
+<rect x="709" y="352" width="54" height="26" rx="6" fill="none" stroke="#81baff"/>
+<line x1="718" y1="352" x2="718" y2="336" stroke="#81baff" stroke-width="3" stroke-linecap="round"/>
+<line x1="754" y1="352" x2="754" y2="336" stroke="#81baff" stroke-width="3" stroke-linecap="round"/>
+<circle cx="724" cy="365" r="2" fill="#81baff" stroke="none" stroke-width="2"/>
+<circle cx="736" cy="365" r="2" fill="#81baff" stroke="none" stroke-width="2"/>
+<circle cx="748" cy="365" r="2" fill="#81baff" stroke="none" stroke-width="2"/>
+<rect x="911" y="328" width="74" height="47" rx="5" fill="none" stroke="#effaf8"/>
+<path d="M 903 383 H 993 L 985 375 H 911 Z" fill="none" stroke="#effaf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 931 346 Q 948 330 965 346" fill="none" stroke="#54e5be" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 938 354 Q 948 344 958 354" fill="none" stroke="#54e5be" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="948" cy="362" r="2.5" fill="#54e5be" stroke="none" stroke-width="2"/>
+<rect x="1136" y="335" width="31" height="48" rx="6" fill="none" stroke="#a8bec3"/>
+<rect x="1161" y="345" width="25" height="38" rx="5" fill="#101f24" stroke="#a8bec3"/>
+<line x1="1145" y1="376" x2="1153" y2="376" stroke="#a8bec3" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1173" cy="376" r="1.5" fill="#a8bec3" stroke="none" stroke-width="2"/>
+<line x1="781" y1="353" x2="889" y2="353" stroke="#81baff" stroke-width="3" stroke-linecap="round"/>
+<path d="M 881 347 L 889 353 L 881 359" fill="none" stroke="#81baff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1007" y1="353" x2="1118" y2="353" stroke="#294047" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 8"/>
+<path d="M 1110 347 L 1118 353 L 1110 359" fill="none" stroke="#294047" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1054" cy="353" r="15" fill="#101f24" stroke="#a8bec3" stroke-width="2"/>
+<line x1="1045" y1="344" x2="1063" y2="362" stroke="#a8bec3" stroke-width="2" stroke-linecap="round"/>
+<text x="736" y="414" fill="#81baff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" text-anchor="middle">Router</text>
+<text x="948" y="414" fill="#effaf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" text-anchor="middle">One Mac radio</text>
+<text x="1160" y="414" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="500" text-anchor="middle">Nearby peers</text>
+<text x="684" y="473" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="600" text-anchor="start">ILLUSTRATIVE RADIO TIME</text>
+<rect x="684" y="493" width="528" height="43" rx="8" fill="#173651" stroke="none"/>
+<text x="948" y="522" fill="#81baff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="600" text-anchor="middle">Router traffic • AWDL held off</text>
+<text x="684" y="582" fill="#effaf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="600" text-anchor="start">More radio time for your stream.</text>
+<text x="684" y="615" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="400" text-anchor="start">Other sources of jitter can still remain.</text>
+<text x="40" y="693" fill="#effaf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">When AWDL takes the radio off the router’s channel, stream packets can be delayed.</text>
+<text x="40" y="735" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="400" text-anchor="start">Conceptual channel sharing, not a benchmark. AWDL being UP does not mean continuous activity.</text>
+<text x="40" y="766" fill="#a8bec3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="400" text-anchor="start">Actual behavior varies with the Mac, macOS version, nearby devices, and Wi-Fi environment.</text>
+</svg>

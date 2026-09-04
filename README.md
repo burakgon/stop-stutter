@@ -23,12 +23,13 @@ Open your game. Boost kicks in. Quit when you’re done.
 
 Stop Stutter makes that workaround effortless. **Open a selected app → Boost starts. Quit the last selected app → Boost ends.** No Terminal commands to repeat. No setting to remember after every game.
 
-| Built for your session | What you get |
-| --- | --- |
-| **Launch and play** | Automatic Boost for the apps you choose |
-| **See it at a glance** | Clear **Boost ON / OFF**, with distinct Auto waiting and paused states |
-| **Make it yours** | Five ready-made app presets, official client icons, and a native picker for any other client |
-| **Understand the details** | A **?** button explains the mechanism, limits, and Apple sharing trade-off |
+## What changes when Boost is on?
+
+![AWDL on versus off: active AWDL can share the Mac’s radio time with router traffic. Boost repeatedly disables AWDL to remove this source of contention. This is a conceptual diagram, not a performance measurement.](docs/diagrams/awdl-on-vs-off.svg)
+
+**Boost ON means AWDL OFF.** Your regular Wi-Fi connection stays enabled. Boost controls the peer-to-peer interface, `awdl0`, during your session. [Apple documents the latency impact of peer-to-peer Wi-Fi](https://developer.apple.com/forums/thread/751839); [AWDL research explains its channel-sharing mechanism](https://arxiv.org/abs/1808.03156).
+
+**The trade-off:** AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable during Boost. AWDL is restored when Boost ends.
 
 ## Pick your streaming apps
 
@@ -50,20 +51,19 @@ The benefit depends on whether AWDL causes your stutter. Preset support means au
 
 **A live stream notices short delays.** Downloads can buffer and catch up. A game stream needs frames, audio, and inputs delivered consistently. Those brief interruptions can feel like stutter even when a speed test reports excellent bandwidth.
 
-**Stop Stutter removes this source of interference.** While boost is on, its helper disables `awdl0` every second. Your normal Wi-Fi remains on. In Auto mode it brings AWDL back after the final watched app quits, so Apple sharing can resume.
+![Packet-arrival infographic: the same eight packets arrive with a gap and a burst in one row, and more evenly in the other. Delayed data can miss a frame deadline. These are illustrative timings, not measured Boost results.](docs/diagrams/packet-timing.svg)
 
-```text
-BOOST OFF                          BOOST ON
-AWDL can share the Wi-Fi radio      AWDL is held off every second
-         ↓                                  ↓
-AWDL-related delays can occur       This source of interference is reduced
+**The target is jitter: variation in packet arrival time.** A stream can receive plenty of data overall and still receive some of it too late. If AWDL is causing those delays, disabling it can help. Router congestion, packet loss, decoding, and display timing can still cause stutter independently.
 
-                 Quit your watched apps
-                          ↓
-                 AWDL comes back on
-```
+**Stop Stutter automates the workaround.** While Boost is on, its helper repeats `/sbin/ifconfig awdl0 down` every second because macOS can reactivate the interface. In Auto mode it brings AWDL back after the final watched app quits, so Apple sharing can resume.
 
-**The trade-off:** AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable while AWDL is off. Turn boost off whenever you need them. The **?** button in the app explains this with an illustrated walkthrough.
+### Try the difference on your Mac
+
+1. Open a repeatable scene in your streaming client over Wi-Fi. Keep the resolution, bitrate, and network setup the same.
+2. Compare **Off** with **Always on** in Stop Stutter. Watch for recurring hitches and, if available, compare the client’s network-latency variation and dropped-frame statistics over similar intervals.
+3. If it helps, switch to **Auto** and let your selected apps control Boost.
+
+[**Download Stop Stutter →**](https://github.com/burakgon/stop-stutter/releases/latest) Free, MIT-licensed, and native to macOS. The diagrams explain the mechanism; the [validation record](docs/VALIDATION.md) separates verified app behavior from performance measurements.
 
 <details>
 <summary>See the in-app explanation</summary>
@@ -130,20 +130,9 @@ AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable w
 
 ## How it works
 
-```text
-Selected apps launch / quit
-           │
-           ▼
-    Native SwiftUI app ── authenticated XPC ──► macOS-managed helper
-           │                                     │
-      2-second heartbeat                   1-second enforcement
-                                                 │
-                                       /sbin/ifconfig awdl0 down
-                                                 │
-                             Last client quits / lease expires / app quits
-                                                 │
-                                       /sbin/ifconfig awdl0 up
-```
+![Automatic Boost lifecycle: a selected app launches, AWDL is disabled immediately and again every second, and AWDL is restored after the last selected app quits. The app renews a six-second lease every two seconds over authenticated XPC to a privileged helper.](docs/diagrams/boost-lifecycle.svg)
+
+**Two timers, two purposes.** The helper’s one-second loop reapplies the AWDL command. The app’s two-second heartbeat renews a six-second lease so a frozen app cannot request Boost forever. These are Stop Stutter’s timers, not AWDL protocol timings. Disconnection releases the lease immediately; restoration begins when no leases remain.
 
 The helper uses Apple’s [`SMAppService`](https://developer.apple.com/documentation/servicemanagement/smappservice) rather than a passwordless sudo rule. The app runs as your normal user; the small helper runs with permission to change AWDL. Both ends validate the peer’s Apple code signature, exact identifier, and signing team using the [public XPC code-signing APIs](https://developer.apple.com/documentation/foundation/nsxpcconnection/setcodesigningrequirement(_:)).
 
@@ -203,6 +192,8 @@ Verify the `UP` flag with `/sbin/ifconfig awdl0`. If another app is still reques
 ## Contributing
 
 Bug reports with macOS version, Mac model, client name, and clear reproduction steps are especially useful. Please distinguish observed AWDL behavior from measured streaming improvements. See [CONTRIBUTING.md](CONTRIBUTING.md) and [the manual test checklist](docs/TESTING.md).
+
+The README’s infographics are original, scalable SVGs with accessible descriptions. See [diagram sources and regeneration](docs/diagrams/README.md) to improve or reuse them.
 
 If this helps your stream, a star helps other Mac users find it. Share your results in an issue—especially if you can compare the same session with boost on and off.
 
