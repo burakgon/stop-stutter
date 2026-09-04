@@ -23,6 +23,7 @@ cp "$bin_dir/StopStutter" "$app/Contents/MacOS/StopStutter"
 cp "$bin_dir/StopStutterHelper" "$app/Contents/MacOS/StopStutterHelper"
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/io.github.burakgon.StopStutter.Helper.plist "$app/Contents/Library/LaunchDaemons/"
+ditto Resources/ClientIcons "$app/Contents/Resources/ClientIcons"
 swift scripts/make-icon.swift "$app/Contents/Resources"
 
 sign_options=(--force --sign "$identity" --options runtime)

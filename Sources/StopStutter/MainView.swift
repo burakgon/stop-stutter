@@ -151,7 +151,9 @@ struct MainView: View {
                     Button("Add your first application", systemImage: "plus") { model.addApplication() }
                         .buttonStyle(.bordered)
                 } else {
-                    ForEach(Array(model.apps.prefix(3))) { app in appRow(app, removable: false) }
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 12)], spacing: 12) {
+                        ForEach(model.apps) { app in appTile(app) }
+                    }
                 }
             }.padding(20).modifier(PanelSurface())
         }
@@ -323,6 +325,26 @@ struct MainView: View {
         }.pickerStyle(.segmented).labelsHidden().controlSize(.large)
     }
 
+    private func appTile(_ app: WatchedApp) -> some View {
+        let boosting = model.protected && app.enabled && model.running.contains(app.id)
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                AppIconView(app: app, model: model).frame(width: 38, height: 38)
+                Spacer(minLength: 4)
+                Toggle("Auto-boost \(app.name)", isOn: Binding(get: { app.enabled }, set: { model.setEnabled(app, $0) }))
+                    .toggleStyle(.switch).labelsHidden().controlSize(.mini)
+            }
+            VStack(alignment: .leading, spacing: 5) {
+                Text(app.name).font(.system(size: 12, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                Text(boosting ? "Boosting now" : !app.enabled ? "Not selected" : model.running.contains(app.id) ? "Running" : "Auto selected")
+                    .font(.system(size: 10)).foregroundStyle(boosting ? Color.mint : .secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(.primary.opacity(0.025), in: RoundedRectangle(cornerRadius: 14))
+    }
+
     private func appRow(_ app: WatchedApp, removable: Bool) -> some View {
         HStack(spacing: 13) {
             AppIconView(app: app, model: model).frame(width: 34, height: 34)
@@ -333,11 +355,11 @@ struct MainView: View {
             }
             Spacer()
             if model.running.contains(app.id) && app.enabled {
-                Text("LIVE").font(.system(size: 8, weight: .bold, design: .monospaced)).tracking(1)
+                Text(model.protected ? "BOOSTING" : "RUNNING").font(.system(size: 8, weight: .bold, design: .monospaced)).tracking(1)
                     .foregroundStyle(.mint).padding(.horizontal, 8).padding(.vertical, 5)
                     .background(.mint.opacity(0.1), in: Capsule())
             }
-            Toggle("Watch \(app.name)", isOn: Binding(get: { app.enabled }, set: { model.setEnabled(app, $0) }))
+            Toggle("Auto-boost \(app.name)", isOn: Binding(get: { app.enabled }, set: { model.setEnabled(app, $0) }))
                 .toggleStyle(.switch).labelsHidden().controlSize(.small)
             if removable {
                 Button { model.remove(app) } label: { Image(systemName: "minus.circle").foregroundStyle(.secondary) }
@@ -361,20 +383,20 @@ struct MainView: View {
 private struct AppIconView: View {
     let app: WatchedApp
     @ObservedObject var model: AppModel
-    private var fallbackSymbol: String {
-        switch app.id {
-        case "com.moonlight-stream.Moonlight": return "moon.stars.fill"
-        case "com.nvidia.gfnpc.mall": return "cloud.fill"
-        case "tv.parsec.www": return "desktopcomputer"
-        case "com.valvesoftware.SteamLink17": return "gamecontroller.fill"
-        default: return "app.fill"
+    private var officialIcon: NSImage? {
+        if let url = model.appURL(app) { return NSWorkspace.shared.icon(forFile: url.path) }
+        for ext in ["icns", "jpg"] {
+            if let url = Bundle.main.url(forResource: app.id, withExtension: ext, subdirectory: "ClientIcons"),
+               let icon = NSImage(contentsOf: url) { return icon }
         }
+        return nil
     }
+
     var body: some View {
-        if let url = model.appURL(app) {
-            Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)).resizable().interpolation(.high)
+        if let icon = officialIcon {
+            Image(nsImage: icon).resizable().interpolation(.high).scaledToFit()
         } else {
-            Image(systemName: fallbackSymbol)
+            Image(systemName: "app.fill")
                 .font(.system(size: 20)).foregroundStyle(.mint)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.mint.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
