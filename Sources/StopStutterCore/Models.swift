@@ -37,8 +37,17 @@ public struct WatchedApp: Codable, Identifiable, Equatable {
 
     public static let suggestions = [
         WatchedApp(bundleIdentifier: "com.moonlight-stream.Moonlight", name: "Moonlight"),
-        WatchedApp(bundleIdentifier: "io.unom.punktfunk", name: "Punktfunk")
+        WatchedApp(bundleIdentifier: "io.unom.punktfunk", name: "Punktfunk"),
+        WatchedApp(bundleIdentifier: "com.nvidia.gfnpc.mall", name: "GeForce NOW"),
+        WatchedApp(bundleIdentifier: "tv.parsec.www", name: "Parsec"),
+        WatchedApp(bundleIdentifier: "com.valvesoftware.SteamLink17", name: "Steam Link")
     ]
+
+    /// Existing choices, including disabled rules, are never silently re-added or enabled.
+    public static func availableSuggestions(in apps: [WatchedApp]) -> [WatchedApp] {
+        let selected = Set(apps.map(\.id))
+        return suggestions.filter { !selected.contains($0.id) }
+    }
 
     public static func matching(_ apps: [WatchedApp], running: Set<String>) -> Set<String> {
         Set(apps.filter { $0.enabled && running.contains($0.bundleIdentifier) }.map(\.bundleIdentifier))

@@ -17,24 +17,24 @@ public enum ProtectionState: Equatable {
 
     public var title: String {
         switch self {
-        case .active: return "Protection is ON"
-        case .waiting, .paused, .setup: return "Protection is OFF"
-        case .starting: return "Turning protection on…"
-        case .restoring: return "Restoring AWDL…"
-        case .checking: return "Checking protection…"
-        case .attention: return "Protection needs attention"
+        case .active: return "Boost is ON"
+        case .waiting, .paused, .setup: return "Boost is OFF"
+        case .starting: return "Turning boost on…"
+        case .restoring: return "Turning boost off…"
+        case .checking: return "Checking boost…"
+        case .attention: return "Boost needs attention"
         }
     }
 
     public var label: String {
         switch self {
-        case .active: return "ACTIVE · AWDL HELD OFF"
+        case .active: return "ACTIVE · READY TO PLAY"
         case .waiting: return "AUTO · WAITING FOR AN APP"
         case .paused: return "PAUSED · AUTOMATION OFF"
         case .setup: return "SETUP REQUIRED"
         case .starting: return "STARTING · PLEASE WAIT"
-        case .restoring: return "RESTORING APPLE SHARING"
-        case .checking: return "CONNECTING TO HELPER"
+        case .restoring: return "FINISHING YOUR SESSION"
+        case .checking: return "CHECKING BOOST STATUS"
         case .attention: return "ACTION NEEDED"
         }
     }

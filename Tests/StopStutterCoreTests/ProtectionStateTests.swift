@@ -34,8 +34,8 @@ final class ProtectionStateTests: XCTestCase {
     func testWaitingAndPausedAreDifferentStatesButBothSayOff() {
         XCTAssertEqual(resolve(), .waiting)
         XCTAssertEqual(resolve(mode: .off), .paused)
-        XCTAssertEqual(ProtectionState.waiting.title, "Protection is OFF")
-        XCTAssertEqual(ProtectionState.paused.title, "Protection is OFF")
+        XCTAssertEqual(ProtectionState.waiting.title, "Boost is OFF")
+        XCTAssertEqual(ProtectionState.paused.title, "Boost is OFF")
         XCTAssertNotEqual(ProtectionState.waiting.label, ProtectionState.paused.label)
     }
 

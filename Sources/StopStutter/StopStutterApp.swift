@@ -19,7 +19,7 @@ struct StopStutterApp: App {
             CommandGroup(replacing: .appInfo) {
                 Button("About Stop Stutter") {
                     NSApp.orderFrontStandardAboutPanel(options: [
-                        .credits: NSAttributedString(string: "Reduce AWDL-related Wi-Fi stutter while you stream.\nOpen source · MIT License\ngithub.com/burakgon/stop-stutter")
+                        .credits: NSAttributedString(string: "Smoother game streaming on Mac.\nOpen source · MIT License\ngithub.com/burakgon/stop-stutter")
                     ])
                 }
             }
@@ -29,7 +29,7 @@ struct StopStutterApp: App {
             MenuContent(model: model)
         } label: {
             Image(systemName: model.protected ? "waveform.path" : "waveform.path.ecg")
-                .accessibilityLabel(model.protected ? "Stop Stutter: protection on" : "Stop Stutter")
+                .accessibilityLabel(model.protected ? "Stop Stutter: boost on" : "Stop Stutter")
         }
         .menuBarExtraStyle(.window)
     }

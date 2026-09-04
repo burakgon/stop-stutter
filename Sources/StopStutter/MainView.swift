@@ -59,7 +59,7 @@ struct MainView: View {
                 BrandMark(size: 34)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Stop Stutter").font(.system(size: 15, weight: .semibold))
-                    Text("Less Wi-Fi stutter.").font(.system(size: 10)).foregroundStyle(.secondary)
+                    Text("Game streaming, smoother.").font(.system(size: 10)).foregroundStyle(.secondary)
                 }
             }
             .padding(.horizontal, 22).padding(.top, 48).padding(.bottom, 34)
@@ -90,7 +90,7 @@ struct MainView: View {
             VStack(alignment: .leading, spacing: 9) {
                 HStack(spacing: 7) {
                     Circle().fill(model.ready ? Color.mint : Color.secondary.opacity(0.5)).frame(width: 6, height: 6)
-                    Text(model.ready ? "Helper installed" : "Helper setup needed").font(.system(size: 11, weight: .medium))
+                    Text(model.ready ? "Ready to boost" : "One-time setup needed").font(.system(size: 11, weight: .medium))
                 }
                 Text("Native. Automatic. Open source.")
                     .font(.system(size: 10)).foregroundStyle(.tertiary)
@@ -120,8 +120,8 @@ struct MainView: View {
                     .frame(width: 32, height: 32).contentShape(Circle())
             }
             .buttonStyle(.plain).foregroundStyle(.secondary)
-            .help("Why does AWDL cause stutter?")
-            .accessibilityLabel("Why does AWDL cause stutter? Learn how protection works")
+            .help("How does Boost work?")
+            .accessibilityLabel("How does Boost work? Learn why game streams stutter and how Boost helps")
         }
     }
 
@@ -130,9 +130,9 @@ struct MainView: View {
 
     private var headerSubtitle: String {
         switch page {
-        case .overview: return "Reduce AWDL-related Wi-Fi stutter while you stream."
-        case .applications: return "Choose which apps automatically turn protection on."
-        case .activity: return "See when AWDL was disabled and restored."
+        case .overview: return "Smoother game streaming on Mac."
+        case .applications: return "Choose which apps automatically start Boost."
+        case .activity: return "Your recent Boost sessions, at a glance."
         case .settings: return "Control the helper, notifications, and startup."
         }
     }
@@ -142,7 +142,7 @@ struct MainView: View {
             hero
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Text("Automatically protect these apps").font(.system(size: 14, weight: .semibold))
+                    Text("Auto-boost your apps").font(.system(size: 14, weight: .semibold))
                     Spacer()
                     Button("Manage", systemImage: "arrow.up.right") { page = .applications }
                         .buttonStyle(.plain).font(.system(size: 11)).foregroundStyle(.secondary)
@@ -154,7 +154,6 @@ struct MainView: View {
                     ForEach(Array(model.apps.prefix(3))) { app in appRow(app, removable: false) }
                 }
             }.padding(20).modifier(PanelSurface())
-            impactNote
         }
     }
 
@@ -169,7 +168,7 @@ struct MainView: View {
                     }
                     .foregroundStyle(stateColor)
                     Text(model.statusTitle)
-                        .font(.system(size: 33, weight: .bold, design: .rounded)).tracking(-0.7)
+                        .font(.system(size: 38, weight: .bold, design: .rounded)).tracking(-0.7)
                         .fixedSize(horizontal: false, vertical: true)
                     Text(model.statusDetail)
                         .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(4)
@@ -179,28 +178,6 @@ struct MainView: View {
                     .frame(width: 106, height: 116)
                     .accessibilityHidden(true)
             }
-            HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("AWDL INTERFACE").font(.system(size: 9, weight: .semibold)).tracking(0.8).foregroundStyle(.secondary)
-                    HStack(spacing: 8) {
-                        Circle().fill(model.interfaceState == .down ? Color.mint : .secondary).frame(width: 7, height: 7)
-                        Text(model.interfaceState == .unavailable ? "Unavailable" : model.interfaceState == .down ? "OFF" : "ON")
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(model.interfaceState == .down ? Color.mint : .primary)
-                    }
-                    Text(model.protected ? "Held off every second" : model.interfaceState == .down ? "Currently disabled" : "Apple sharing can use AWDL")
-                        .font(.system(size: 10)).foregroundStyle(.secondary)
-                }.frame(maxWidth: .infinity, alignment: .leading)
-                Rectangle().fill(.primary.opacity(0.09)).frame(width: 1, height: 50).padding(.horizontal, 20)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("YOUR NORMAL WI-FI").font(.system(size: 9, weight: .semibold)).tracking(0.8).foregroundStyle(.secondary)
-                    Label("Unchanged", systemImage: "wifi").font(.system(size: 16, weight: .semibold))
-                    Text("Only the AWDL interface is controlled")
-                        .font(.system(size: 10)).foregroundStyle(.secondary)
-                }.frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(16)
-            .background(stateColor.opacity(model.protected ? 0.09 : 0.04), in: RoundedRectangle(cornerRadius: 14))
             Label(model.sessionContext, systemImage: model.mode == .automatic ? "app.badge" : "hand.raised")
                 .font(.system(size: 11, weight: .medium)).foregroundStyle(.secondary)
             Rectangle().fill(.primary.opacity(0.07)).frame(height: 1)
@@ -214,14 +191,14 @@ struct MainView: View {
                     }
                     Spacer()
                     Button { Task { await model.enableHelper() } } label: {
-                        Label(model.helperStatus == .requiresApproval ? "Approve Helper" : "Enable Helper", systemImage: "bolt.shield")
+                        Label(model.helperStatus == .requiresApproval ? "Approve Helper" : "Enable Helper", systemImage: "bolt.fill")
                             .font(.system(size: 12, weight: .semibold)).padding(.horizontal, 5).padding(.vertical, 3)
                     }
                     .buttonStyle(PrimaryGlassButton()).disabled(model.busy)
                 } else {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("Protection mode").font(.system(size: 12, weight: .semibold))
-                        Text("On holds AWDL off.")
+                        Text("Boost mode").font(.system(size: 12, weight: .semibold))
+                        Text("Automatic, or whenever you want.")
                             .font(.system(size: 10)).foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -241,7 +218,7 @@ struct MainView: View {
     private var applications: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text("Protection follows the app, even when it’s in the background.")
+                Text("Boost follows your selected apps, even in the background.")
                     .font(.system(size: 12)).foregroundStyle(.secondary)
                 Spacer()
                 Button("Add App", systemImage: "plus") { model.addApplication() }
@@ -250,13 +227,27 @@ struct MainView: View {
             VStack(spacing: 18) {
                 if model.apps.isEmpty {
                     ContentUnavailableView("Your next session starts here", systemImage: "app.dashed",
-                                           description: Text("Add Moonlight, Punktfunk, or any other app you stream with."))
+                                           description: Text("Add Moonlight, GeForce NOW, or another app you stream with."))
                 }
                 ForEach(model.apps) { app in appRow(app, removable: true) }
             }.padding(22).modifier(PanelSurface())
-            Label("AWDL returns when the last enabled app quits. Closing a client’s window may leave that app running.", systemImage: "info.circle")
+            if !model.availableSuggestions.isEmpty {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("More apps to boost").font(.system(size: 14, weight: .semibold))
+                    ForEach(model.availableSuggestions) { app in
+                        HStack(spacing: 13) {
+                            AppIconView(app: app, model: model).frame(width: 30, height: 30)
+                            Text(app.name).font(.system(size: 12, weight: .medium))
+                            Spacer()
+                            Button("Add", systemImage: "plus") { model.addSuggested(app) }
+                                .buttonStyle(.bordered)
+                                .accessibilityLabel("Add \(app.name)")
+                        }
+                    }
+                }.padding(22).modifier(PanelSurface())
+            }
+            Label("Auto Boost stops when the last selected app quits. Closing a window may leave the app running.", systemImage: "info.circle")
                 .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(4)
-            impactNote
         }
     }
 
@@ -270,7 +261,7 @@ struct MainView: View {
             }
             VStack(alignment: .leading, spacing: 24) {
                 if model.events.isEmpty {
-                    ContentUnavailableView("All quiet", systemImage: "clock", description: Text("Protection changes will appear here."))
+                    ContentUnavailableView("All quiet", systemImage: "clock", description: Text("Your Boost sessions will appear here."))
                 }
                 ForEach(model.events) { event in
                     HStack(alignment: .top, spacing: 15) {
@@ -294,7 +285,7 @@ struct MainView: View {
                 settingToggle("Launch at login", detail: "Keep Stop Stutter ready in your menu bar.",
                               binding: Binding(get: { model.launchAtLogin }, set: model.setLaunchAtLogin))
                 Divider()
-                settingToggle("Protection notifications", detail: "A quiet banner when protection starts or AWDL returns.",
+                settingToggle("Boost notifications", detail: "A quiet banner when your Boost session starts or ends.",
                               binding: Binding(get: { model.notificationsEnabled }, set: model.setNotifications))
                 if model.notificationDenied {
                     Text("Notifications are blocked in System Settings → Notifications → Stop Stutter.")
@@ -302,8 +293,8 @@ struct MainView: View {
                 }
             }.padding(22).modifier(PanelSurface())
             VStack(alignment: .leading, spacing: 16) {
-                Label("AWDL helper", systemImage: "bolt.shield").font(.system(size: 15, weight: .semibold))
-                Text("The helper handles the one-second loop and restores AWDL when protection ends. macOS manages its permission.")
+                Label("Background helper", systemImage: "bolt.fill").font(.system(size: 15, weight: .semibold))
+                Text("The helper keeps Boost running during your session and wraps up when it ends. macOS manages its permission.")
                     .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(4)
                 HStack {
                     if model.ready || model.helperStatus == .requiresApproval {
@@ -311,13 +302,12 @@ struct MainView: View {
                         Spacer()
                         Button("Remove Helper", role: .destructive) { Task { await model.removeHelper() } }
                     } else {
-                        Button("Enable Helper", systemImage: "bolt.shield") { Task { await model.enableHelper() } }
+                        Button("Enable Helper", systemImage: "bolt.fill") { Task { await model.enableHelper() } }
                             .buttonStyle(PrimaryGlassButton())
                     }
                 }.disabled(model.busy)
                 if let error = model.error { Text(error).font(.system(size: 11)).foregroundStyle(.orange).textSelection(.enabled) }
             }.padding(22).modifier(PanelSurface())
-            impactNote
             HStack {
                 Text("Stop Stutter 0.1.0 · MIT License").font(.system(size: 11)).foregroundStyle(.tertiary)
                 Spacer()
@@ -327,29 +317,10 @@ struct MainView: View {
         }
     }
 
-    private var impactNote: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "airplay.audio").font(.system(size: 14)).padding(.top, 1)
-            Text("AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable while AWDL is off. Your normal Wi-Fi connection stays on.")
-                .font(.system(size: 11)).lineSpacing(4)
-        }.foregroundStyle(.secondary).padding(.horizontal, 4)
-    }
-
     private var modePicker: some View {
-        Picker("Protection", selection: Binding(get: { model.mode }, set: model.setMode)) {
+        Picker("Boost", selection: Binding(get: { model.mode }, set: model.setMode)) {
             ForEach(ProtectionMode.allCases) { mode in Text(mode.title).tag(mode) }
         }.pickerStyle(.segmented).labelsHidden().controlSize(.large)
-    }
-
-    private func metric(_ label: String, value: String, symbol: String, detail: String) -> some View {
-        VStack(alignment: .leading, spacing: 9) {
-            HStack(spacing: 5) {
-                Image(systemName: symbol)
-                Text(label).tracking(0.8)
-            }.font(.system(size: 8, weight: .semibold)).foregroundStyle(.secondary)
-            Text(value).font(.system(size: 14, weight: .semibold))
-            Text(detail).font(.system(size: 9)).foregroundStyle(.tertiary)
-        }.frame(maxWidth: .infinity, alignment: .leading).padding(16).modifier(PanelSurface(radius: 16))
     }
 
     private func appRow(_ app: WatchedApp, removable: Bool) -> some View {
@@ -390,11 +361,20 @@ struct MainView: View {
 private struct AppIconView: View {
     let app: WatchedApp
     @ObservedObject var model: AppModel
+    private var fallbackSymbol: String {
+        switch app.id {
+        case "com.moonlight-stream.Moonlight": return "moon.stars.fill"
+        case "com.nvidia.gfnpc.mall": return "cloud.fill"
+        case "tv.parsec.www": return "desktopcomputer"
+        case "com.valvesoftware.SteamLink17": return "gamecontroller.fill"
+        default: return "app.fill"
+        }
+    }
     var body: some View {
         if let url = model.appURL(app) {
             Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)).resizable().interpolation(.high)
         } else {
-            Image(systemName: app.name == "Moonlight" ? "moon.stars.fill" : "app.fill")
+            Image(systemName: fallbackSymbol)
                 .font(.system(size: 20)).foregroundStyle(.mint)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.mint.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
@@ -443,17 +423,17 @@ extension ProtectionState {
     }
     var symbol: String {
         switch self {
-        case .active: return "checkmark.shield.fill"
+        case .active: return "bolt.fill"
         case .waiting: return "clock.fill"
-        case .paused, .setup: return "shield.slash.fill"
+        case .paused, .setup: return "bolt.slash.fill"
         case .checking, .starting, .restoring: return "arrow.triangle.2.circlepath"
-        case .attention: return "exclamationmark.shield.fill"
+        case .attention: return "exclamationmark.circle.fill"
         }
     }
     var badge: String {
         switch self {
-        case .active: return "PROTECTION ON"
-        case .waiting, .paused, .setup: return "PROTECTION OFF"
+        case .active: return "BOOST ON"
+        case .waiting, .paused, .setup: return "BOOST OFF"
         case .checking, .starting, .restoring: return "CHECKING STATUS"
         case .attention: return "NEEDS ATTENTION"
         }
@@ -497,11 +477,9 @@ struct MenuContent: View {
                 }
             }
             if model.ready {
-                Picker("Protection", selection: Binding(get: { model.mode }, set: model.setMode)) {
+                Picker("Boost", selection: Binding(get: { model.mode }, set: model.setMode)) {
                     ForEach(ProtectionMode.allCases) { Text($0.title).tag($0) }
                 }.pickerStyle(.segmented).labelsHidden()
-                Text("AWDL \(model.interfaceState == .up ? "ON" : model.interfaceState == .down ? "OFF" : "UNAVAILABLE")")
-                    .font(.system(size: 12, weight: .bold, design: .monospaced))
                 Text(model.statusDetail)
                     .font(.system(size: 11)).foregroundStyle(.secondary)
             }

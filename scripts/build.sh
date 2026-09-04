@@ -8,7 +8,12 @@ app="$PWD/build/Stop Stutter.app"
 # SwiftPM's Swift Build engine can otherwise stamp the minimum OS as the linked SDK.
 # Correct SDK metadata is required for native Liquid Glass's linked-on-or-after behavior.
 sdk_version="$(xcrun --sdk macosx --show-sdk-version)"
-build_args=(-c "$configuration" -Xlinker -platform_version -Xlinker macos -Xlinker 14.0 -Xlinker "$sdk_version")
+build_args=(-c "$configuration")
+# Swift Build in Xcode 27 passes these directly to ld. Xcode 26's universal
+# frontend passes them to clang instead, and already stamps the correct SDK.
+if [[ "${sdk_version%%.*}" -ge 27 ]]; then
+    build_args+=(-Xlinker -platform_version -Xlinker macos -Xlinker 14.0 -Xlinker "$sdk_version")
+fi
 if [[ "${UNIVERSAL:-0}" == 1 ]]; then build_args+=(--arch arm64 --arch x86_64); fi
 
 swift build "${build_args[@]}"

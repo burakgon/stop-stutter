@@ -57,26 +57,34 @@ final class AppModel: ObservableObject {
         protectionState.title
     }
     var statusDetail: String {
-        if let error { return error }
-        if protected {
-            return "AWDL is held off to reduce Wi-Fi latency spikes, video hitching, and audio interruptions caused by AWDL."
+        if error != nil { return "Boost needs a quick check. Open Settings to reconnect the helper." }
+        switch protectionState {
+        case .active: return "Helping your game stream stay smooth and responsive. Enjoy your session."
+        case .setup: return "Smoother game streaming starts here. Enable the helper once, then let Boost take care of each session."
+        case .starting: return "Getting Boost ready for your session…"
+        case .restoring: return "Wrapping up your Boost session…"
+        case .checking: return "Checking whether Boost is active. This should only take a moment."
+        case .paused: return "Boost is paused. Choose Always on to start now, or Auto to follow your selected apps."
+        case .waiting: return "Open a selected app and Boost starts automatically. It stops when your last selected app quits."
+        case .attention: return "Open Settings to get Boost ready again."
         }
-        if !ready { return "Reduce AWDL-related Wi-Fi stutter in Moonlight, Punktfunk, and other streaming apps. Enable the helper to get started." }
-        if protectionState == .starting { return "Waiting for the helper to confirm AWDL is off. Protection is not active yet." }
-        if protectionState == .restoring { return "Your session ended. The helper is turning AWDL back on so Apple sharing can resume." }
-        if protectionState == .checking { return "Confirming the helper’s current status before reporting whether protection is active." }
-        if mode == .off { return "Automatic protection is paused. Choose Always on to hold AWDL off now, or Auto to follow your streaming apps." }
-        return "No watched app is running. Open one to reduce AWDL-related stutter automatically; quit it to restore Apple sharing."
     }
     var sessionContext: String {
         if protected {
-            if mode == .on { return "Manual session · stays on until you change the mode or quit" }
+            if mode == .on { return "Always on · you’re in control" }
             let names = matchingApps.map(\.name).joined(separator: ", ")
-            return names.isEmpty ? "Another Stop Stutter session is protecting this Mac" : "Active for \(names) · ends when the last watched app quits"
+            return names.isEmpty ? "Boost is active on this Mac" : "Boosting \(names)"
         }
-        if protectionState == .waiting { return "Auto is armed · \(apps.filter(\.enabled).count) apps watched" }
-        if protectionState == .paused { return "Auto is paused · opening a watched app will not start protection" }
-        return "Protection ON means AWDL OFF. Your normal Wi-Fi stays on."
+        if protectionState == .waiting { return "Auto ready · \(apps.filter(\.enabled).count) apps selected" }
+        if protectionState == .paused { return "Paused · automatic Boost is off" }
+        return "Moonlight, GeForce NOW, and your favorite streaming apps"
+    }
+    var availableSuggestions: [WatchedApp] { WatchedApp.availableSuggestions(in: apps) }
+
+    func addSuggested(_ app: WatchedApp) {
+        guard availableSuggestions.contains(where: { $0.id == app.id }) else { return }
+        apps.append(app)
+        saveApps()
     }
 
     init() {
@@ -107,7 +115,7 @@ final class AppModel: ObservableObject {
         timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.refresh(); self?.requestSync() }
         }
-        addEvent("Ready to listen", "Watching application launches and quits on this Mac.", symbol: "waveform.path")
+        addEvent("Ready to boost", "Your selected apps can start a Boost session automatically.", symbol: "waveform.path")
         requestSync()
         Task { await refreshNotificationPermission() }
     }
@@ -137,8 +145,8 @@ final class AppModel: ObservableObject {
 
     func addApplication() {
         let panel = NSOpenPanel()
-        panel.title = "Choose an app to protect"
-        panel.message = "AWDL will be held off for as long as a selected app is running."
+        panel.title = "Choose an app to boost"
+        panel.message = "Boost will stay on for as long as a selected app is running."
         panel.allowedContentTypes = [.applicationBundle]
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
         panel.allowsMultipleSelection = true
@@ -198,7 +206,7 @@ final class AppModel: ObservableObject {
             if service.status == .enabled {
                 let state = try await client.update(suppress: false)
                 guard !state.managing, state.error == nil else {
-                    throw ControlError.connectionFailed("The helper is still protecting another session or restoring AWDL. Try removing it once recovery finishes.")
+                    throw ControlError.connectionFailed("Another Boost session is still active or finishing. Try removing the helper once it ends.")
                 }
             }
             try await service.unregister()
@@ -207,7 +215,7 @@ final class AppModel: ObservableObject {
             helperConnected = false
             error = nil
             refresh()
-            addEvent("Helper removed", "Background AWDL control is disabled.", symbol: "checkmark.circle")
+            addEvent("Helper removed", "The background helper has been removed.", symbol: "checkmark.circle")
         } catch { self.error = error.localizedDescription }
     }
 
@@ -249,20 +257,20 @@ final class AppModel: ObservableObject {
                 if result.protected != previousProtection {
                     let enabled = result.protected
                     let names = matchingApps.map(\.name).joined(separator: ", ")
-                    let title = enabled ? "Protection is on" : "AWDL is back on"
+                    let title = enabled ? "Boost is on" : "Boost is off"
                     let detail = enabled
-                        ? (mode == .on ? "Manual protection started. AWDL is held off every second." : "\(names.isEmpty ? "A watched app" : names) is running. AWDL is held off every second.")
-                        : "Protection ended. AirDrop and related Continuity features can resume."
+                        ? (mode == .on ? "Boost is ready for your session. It stays on until you change the mode or quit Stop Stutter." : "\(names.isEmpty ? "A watched app" : names) is running. Enjoy your Boost session.")
+                        : "Your Boost session has ended. See you next game."
                     // Only announce recovery after the interface was verified up.
                     if enabled || (result.interface == .up && result.error == nil) {
-                        addEvent(title, detail, symbol: enabled ? "waveform.path" : "wifi")
+                        addEvent(title, detail, symbol: enabled ? "bolt.fill" : "bolt.slash")
                         notify(title, detail)
                         previousProtection = enabled
                     }
                 }
                 if let message = result.error, message != lastEventError {
-                    addEvent("AWDL needs attention", message, symbol: "exclamationmark.triangle")
-                    notify("AWDL needs attention", message)
+                    addEvent("Boost needs attention", message, symbol: "exclamationmark.triangle")
+                    notify("Boost needs attention", message)
                 }
                 lastEventError = result.error
             } catch {

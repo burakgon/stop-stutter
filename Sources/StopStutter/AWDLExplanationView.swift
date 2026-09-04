@@ -38,19 +38,19 @@ struct AWDLExplanationView: View {
                     .accessibilityElement(children: .combine)
 
                     explanationStep("3", title: "Stop Stutter holds AWDL off while you play.",
-                        text: "Protection disables only AWDL, leaving your normal Wi-Fi on. Because macOS can turn AWDL back on, the helper disables it again every second. In Auto mode, it restores AWDL after the last watched app quits.")
+                        text: "Boost disables only AWDL, leaving your normal Wi-Fi on. Because macOS can turn AWDL back on, the helper disables it again every second. In Auto mode, it restores AWDL after the last watched app quits.")
 
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: "airplay.audio").foregroundStyle(.orange).font(.system(size: 19))
                         VStack(alignment: .leading, spacing: 6) {
                             Text("The trade-off: Apple sharing takes a break.").font(.system(size: 13, weight: .semibold))
-                            Text("AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable while protection is on. Turn protection off when you need them.")
+                            Text("AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable while boost is on. Turn boost off when you need them.")
                                 .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(3)
                         }
                     }
                     .padding(16).background(.orange.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
 
-                    Text("This helps when AWDL is the cause. It cannot fix a slow host, decoder problems, congestion, or every other source of stutter. Compare the same stream with protection on and off to see whether it helps your Mac.")
+                    Text("This helps when AWDL is the cause. It cannot fix a slow host, decoder problems, congestion, or every other source of stutter. Compare the same stream with boost on and off to see whether it helps your Mac.")
                         .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(3)
                     HStack(spacing: 18) {
                         Link("Apple’s explanation ↗", destination: URL(string: "https://developer.apple.com/forums/thread/751839")!)
@@ -60,7 +60,7 @@ struct AWDLExplanationView: View {
             }
             Divider()
             HStack {
-                Label("Protection ON = AWDL OFF", systemImage: "checkmark.shield.fill")
+                Label("Boost ON = AWDL OFF", systemImage: "bolt.fill")
                     .font(.system(size: 12, weight: .semibold)).foregroundStyle(.mint)
                 Spacer()
                 Button("Got it") { dismiss() }.buttonStyle(PrimaryGlassButton()).keyboardShortcut(.defaultAction)
