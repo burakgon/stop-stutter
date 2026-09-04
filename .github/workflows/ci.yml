@@ -1,0 +1,27 @@
+name: Build and test
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show toolchain
+        run: xcodebuild -version && swift --version
+      - name: Run policy and recovery tests
+        run: swift test
+      - name: Build universal preview app
+        env:
+          UNIVERSAL: '1'
+        run: ./scripts/build.sh
+      - name: Validate bundle and architectures
+        run: |
+          plutil -lint "build/Stop Stutter.app/Contents/Info.plist"
+          plutil -lint "build/Stop Stutter.app/Contents/Library/LaunchDaemons/io.github.burakgon.StopStutter.Helper.plist"
+          lipo -archs "build/Stop Stutter.app/Contents/MacOS/StopStutter"
+          lipo -archs "build/Stop Stutter.app/Contents/MacOS/StopStutterHelper"
+          xcrun vtool -show-build "build/Stop Stutter.app/Contents/MacOS/StopStutter"

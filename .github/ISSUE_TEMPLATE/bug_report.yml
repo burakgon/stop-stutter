@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible problem with Stop Stutter.
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Stop Stutter version
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Mac model and macOS version
+      placeholder: MacBook Pro M3, macOS 26.0
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Streaming client and version
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: What happened, and how can we reproduce it?
+      description: Include expected behavior and whether the helper is approved. Remove personal details from logs or screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: state
+    attributes:
+      label: AWDL behavior
+      description: Does the AWDL badge change? Do you see an error? Please distinguish interface behavior from streaming performance.
