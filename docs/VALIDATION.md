@@ -1,17 +1,21 @@
 # 0.1.0 validation record
 
-Development host: Apple Silicon Mac, macOS 27.0 developer beta, Xcode 27.0. Deployment target: macOS 14.0. Built and inspected both arm64 and x86_64 slices. The linked SDK version is explicitly stamped by the build script to enable the system's modern Liquid Glass behavior.
+Development host: Apple Silicon Mac, macOS 27.0 developer beta, Xcode 27.0. Deployment target: macOS 14.0. Built and inspected both arm64 and x86_64 slices. With Xcode 27, the linked SDK version is explicitly stamped by the build script to enable the system's modern Liquid Glass behavior.
+
+GitHub Actions also passed all 28 tests and the universal build on macOS 26 with Xcode 26.5. Both slices report a macOS 14.0 minimum and the correct 26.5 linked SDK.
 
 ## Checks completed
 
-- 26 automated tests for control policy, lease ownership, error recovery, persistence, and truthful UI state classification.
+- 28 automated tests for control policy, lease ownership, error recovery, persistence, and truthful UI state classification.
+- Streaming presets: verified Parsec’s identifier from its official macOS package, Steam Link’s from Apple’s app metadata, and GeForce NOW’s from its official macOS disk image. Matching and preservation of disabled/custom rules have automated coverage.
+- Added GeForce NOW, Parsec, and Steam Link through the native suggested-app controls; all five selected rules and their official icons are visible together on the overview. The latest icon bundle passed signing, notarization, and CI again.
 - Native application picker: selected TextEdit, verified its persisted rule, then removed the temporary rule.
 - Native AWDL explanation sheet: opened from the ? button, inspected both ends of its scrollable content, verified source links are present, and dismissed with Escape.
-- Revised UI states: observed and captured active green Protection ON / AWDL OFF, blue Auto waiting / Protection OFF, and neutral paused Protection OFF / AWDL ON against the live helper.
+- Revised UI states: observed and captured active green Boost ON, blue Auto waiting / Boost OFF, and neutral paused Boost OFF against the live helper.
 - Approved SMAppService helper installed and running under launchd.
-- Actual interface checks using `/sbin/ifconfig awdl0`: the `UP` flag disappears during protection and returns after release.
-- Manual protection through the UI: on and off matched the real interface state.
-- Punktfunk launch triggered automatic protection; quitting it restored AWDL.
+- Actual interface checks using `/sbin/ifconfig awdl0`: the `UP` flag disappears during boost and returns after release.
+- Manual boost through the UI: on and off matched the real interface state.
+- Punktfunk launch triggered automatic boost; quitting it restored AWDL.
 - A signed integration probe verified two independent leases, keeping AWDL down when only one ends, restoration when the last ends, immediate disconnect recovery, and recovery after a heartbeat stops.
 - A probe with the same bundle identifier but only an ad-hoc signature was rejected by the helper.
 - In-app helper removal completed; launchd no longer listed the service and AWDL remained up.

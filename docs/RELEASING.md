@@ -19,6 +19,6 @@ Do not publish an unnotarized helper build as a supported end-user download. Ad-
 
 ## Updating an installed helper
 
-For the initial release, updates are manual. In the installed version, turn protection off, remove the helper in Settings, and quit before replacing the app. Open the new version and enable its helper again. This follows Apple's requirement to re-register after the daemon executable or plist changes. Do not replace a live bundle during enforcement.
+For the initial release, updates are manual. In the installed version, turn boost off, remove the helper in Settings, and quit before replacing the app. Open the new version and enable its helper again. This follows Apple's requirement to re-register after the daemon executable or plist changes. Do not replace a live bundle during enforcement.
 
 CI intentionally has no signing credentials. A maintainer performs signing and notarization on a trusted Mac. Contributions never run privileged network commands in CI.

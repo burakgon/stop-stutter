@@ -22,9 +22,9 @@ Before the first down command, the helper creates and syncs a marker in a root-o
 
 The marker means “this helper owes an AWDL up.” Recovery clears it only after `ifconfig up` succeeds and `IFF_UP` is verified. Recovery failures retain ownership and retry. A helper restart sees the marker and attempts restoration before handling new connections. A SIGTERM handler attempts restoration on orderly service removal; launchd restarts nonzero exits. A forced kill is recovered by the next launch, subject to normal OS scheduling and service approval.
 
-The app renews its connection's six-second lease every two seconds. The helper's timer expires leases using continuous monotonic time, which advances over sleep and ignores wall-clock changes. Only the last lease ending triggers restoration. Control returns to AWDL up after protection, regardless of its state before protection. With no lease or recovery marker, the daemon never changes the interface.
+The app renews its connection's six-second lease every two seconds. The helper's timer expires leases using continuous monotonic time, which advances over sleep and ignores wall-clock changes. Only the last lease ending triggers restoration. Control returns to AWDL up after Boost, regardless of its state before Boost. With no lease or recovery marker, the daemon never changes the interface.
 
-The UI treats a session as protected only after a successful response that says the helper owns control, a lease exists, the interface is down, and no error is present. RPC timeout/error paths do not claim protection. RPC completion is guarded against duplicate replies and timeouts. A heartbeat failure lets the lease expire; the client retries on its next poll.
+The UI treats a Boost as active only after a successful response that says the helper owns control, a lease exists, the interface is down, and no error is present. RPC timeout/error paths do not claim active Boost. RPC completion is guarded against duplicate replies and timeouts. A heartbeat failure lets the lease expire; the client retries on its next poll.
 
 ## Limits
 
