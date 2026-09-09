@@ -80,7 +80,7 @@ The benefit depends on whether AWDL causes your stutter. Preset support means au
 - **States you can read at a glance.** Green **Boost is ON** means a verified active session. Blue **OFF / Auto waiting** is ready for your next app launch. Gray **OFF / Paused** means automation is disabled. Setup, transitions, and errors have their own labels.
 - **An explanation built in.** The **?** panel shows why AWDL can cause lag, how boost helps, and what happens to Apple sharing.
 - **Native Liquid Glass.** SwiftUI, real macOS 26+ glass controls, and native materials on macOS 14–15. Supports the system appearance and accessibility settings.
-- **A quiet menu bar companion.** Close the main window and boost keeps working. Optional launch at login.
+- **A quiet menu bar companion.** Runs without a Dock icon. Close the main window and boost keeps working; use the menu bar icon to **Open Stop Stutter** again or **Quit**. Optional launch at login.
 - **Clear notifications.** Quiet banners when Boost starts, ends, or needs attention. No notification sounds over your stream.
 - **Recovery built in.** Disconnect recovery, six-second leases, and a durable recovery marker help prevent AWDL from being left off after a crash.
 - **No accounts, analytics, ads, or dependencies.** App choices stay in local preferences. Activity history exists only in memory.
