@@ -9,7 +9,8 @@ Steadier Boost sessions.
 - Interface changes use the kernel's flag ioctls directly instead of launching `/sbin/ifconfig` for each command.
 - A heartbeat that catches AWDL mid-revival no longer ends the session with "Boost is off" and "Boost is on" notifications. The overview counts blocked AWDL wake-ups instead.
 - App Nap can no longer delay lease renewal during a session. Renewal continues while menus are open, and a slow reply keeps the lease instead of releasing it. Leases now last ten seconds.
-- Future updates restart the helper automatically once no session is active. The app notes when an older helper is still running.
+- After future updates, the helper restarts itself on the new build within seconds, without a password or re-approval.
+- Updating from 0.1.0 needs one step: restart the Mac, or use Remove Helper and then Enable Helper. Remove Helper now works even when the old helper can no longer be reached, and a failed removal keeps your Boost mode.
 - Stop Stutter runs as a menu bar app without a Dock icon (#2).
 
 ## 0.1.0 — 2026-09-04

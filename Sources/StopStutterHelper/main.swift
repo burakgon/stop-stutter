@@ -72,11 +72,12 @@ final class HelperService: NSObject, NSXPCListenerDelegate {
         return result
     }
 
-    /// Exits only while idle, so an update never interrupts a Boost session. The nonzero status makes launchd
-    /// start the replacement executable; the recovery marker is already clear.
+    /// Once an update replaces the executable, this process fails every client's code-signature check and can no
+    /// longer serve a session. Restore AWDL, then exit nonzero so launchd starts the new build.
     private func restartIfUpdated() {
-        guard engine.isIdle, updates?.updateInstalled() == true else { return }
+        guard updates?.updateInstalled() == true else { return }
         log.notice("A new helper was installed; restarting to load it.")
+        perform { $0.shutdown(now: MonotonicTime.now) }
         exit(EX_TEMPFAIL)
     }
 

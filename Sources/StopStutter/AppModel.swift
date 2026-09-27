@@ -208,14 +208,16 @@ final class AppModel: ObservableObject {
     func removeHelper() async {
         busy = true
         suspendedForRemoval = true
+        let previousMode = mode
         mode = .off
         defaults.set(mode.rawValue, forKey: "mode")
         defer { busy = false; suspendedForRemoval = false }
         do {
             // Wait for any earlier suppress request before releasing our lease.
             while syncing { try await Task.sleep(for: .milliseconds(50)) }
-            if service.status == .enabled {
-                let state = try await client.update(suppress: false)
+            // A reachable helper must confirm that no other session still owns AWDL. An unreachable one, such as an
+            // older build that an update replaced, restores AWDL itself when macOS stops it for removal.
+            if service.status == .enabled, let state = try? await client.update(suppress: false) {
                 guard !state.managing, state.error == nil else {
                     throw ControlError.connectionFailed("Another Boost session is still active or finishing. Try removing the helper once it ends.")
                 }
@@ -228,7 +230,11 @@ final class AppModel: ObservableObject {
             error = nil
             refresh()
             addEvent("Helper removed", "The background helper has been removed.", symbol: "checkmark.circle")
-        } catch { self.error = error.localizedDescription }
+        } catch {
+            // A failed removal must not silently leave Boost switched off.
+            setMode(previousMode)
+            self.error = error.localizedDescription
+        }
     }
 
     func setLaunchAtLogin(_ enabled: Bool) {
@@ -295,13 +301,23 @@ final class AppModel: ObservableObject {
                 helperOutdated = outdated
             } catch {
                 helperConnected = false
-                self.error = "The helper is unavailable. Check its approval in System Settings. \(error.localizedDescription)"
+                self.error = Self.unavailableMessage(for: error)
                 // Invalidating releases this app's lease at once, so only a broken connection is replaced.
                 if !(error is HelperTimeout) { client.invalidate() }
             }
             syncing = false
             if resync { resync = false; requestSync() }
         }
+    }
+
+    /// An update that replaces the helper's executable leaves the old process failing the code-signature check
+    /// until it restarts. Helpers from 0.1.1 on restart within seconds; a 0.1.0 helper needs help once.
+    private static func unavailableMessage(for error: Error) -> String {
+        let error = error as NSError
+        if error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionCodeSigningRequirementFailure {
+            return "The helper still running is from the previous version. It normally restarts within a few seconds. If this message stays, use Remove Helper and then Enable Helper, or restart your Mac."
+        }
+        return "The helper is unavailable. Check its approval in System Settings. \(error.localizedDescription)"
     }
 
     static let helperUpdateAdvice = "This version includes a faster helper. Restart your Mac, or use Remove Helper and then Enable Helper in Settings, to start using it."

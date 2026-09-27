@@ -30,7 +30,9 @@ The UI treats a Boost as active only after a successful response that says the h
 
 ## Updates
 
-The helper records its executable’s identity at launch. Once an update replaces that file, the replacement has stayed unchanged for two checks, and no lease or restore is pending, the helper exits with a temporary-failure status and launchd starts the new build. No re-approval is needed while the launchd plist is unchanged. A 0.1.0 helper predates this and keeps running until the Mac restarts or the helper is removed and enabled again; the app detects the older helper revision and says so in Settings and Activity.
+The helper records its executable’s identity at launch. A process whose executable was replaced fails every client’s code-signature check (`errSecCSNoSuchCode`), so it can no longer serve anyone. Once the replacement has stayed unchanged for two checks, the helper restores AWDL, exits with a temporary-failure status, and launchd starts the new build. No re-approval is needed while the launchd plist is unchanged.
+
+A 0.1.0 helper predates this and keeps running until the Mac restarts or the helper is removed and enabled again. The app explains this when the signature check fails, and removal no longer requires reaching the helper: an unreachable helper restores AWDL itself when macOS stops it. A failed removal restores the previous Boost mode.
 
 ## Limits
 

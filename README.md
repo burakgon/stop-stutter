@@ -93,6 +93,8 @@ The benefit depends on whether AWDL causes your stutter. Preset support means au
 4. Allow notifications if you want session updates.
 5. Choose **Auto**, then open Moonlight, GeForce NOW, or another selected app.
 
+**Updating from 0.1.0:** quit Stop Stutter, replace the app, and open it. Then restart your Mac, or use **Settings → Remove Helper → Enable Helper**, so the new helper replaces the old one. Later updates restart the helper automatically.
+
 Release builds are signed with Developer ID and notarized by Apple. The universal binary supports Apple Silicon and Intel. **macOS 14 Sonoma or later** is required; Liquid Glass requires **macOS 26 Tahoe or later**.
 
 ### Choose when boost runs
