@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.1 — 2026-09-27
+
+Steadier Boost sessions.
+
+- The helper now reacts to the kernel's interface notifications and turns AWDL off again within milliseconds when macOS revives it. Before, AWDL could stay active for up to a second, long enough to stutter a stream.
+- The helper no longer rewrites AWDL every second while it is already off. Each write made the kernel broadcast a flag change that woke the Wi-Fi daemons.
+- Interface changes use the kernel's flag ioctls directly instead of launching `/sbin/ifconfig` for each command.
+- A heartbeat that catches AWDL mid-revival no longer ends the session with "Boost is off" and "Boost is on" notifications. The overview counts blocked AWDL wake-ups instead.
+- App Nap can no longer delay lease renewal during a session. Renewal continues while menus are open, and a slow reply keeps the lease instead of releasing it. Leases now last ten seconds.
+- Future updates restart the helper automatically once no session is active. The app notes when an older helper is still running.
+- Stop Stutter runs as a menu bar app without a Dock icon (#2).
+
 ## 0.1.0 — 2026-09-04
 
 First public preview.

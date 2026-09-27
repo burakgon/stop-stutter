@@ -55,7 +55,7 @@ The benefit depends on whether AWDL causes your stutter. Preset support means au
 
 **The target is jitter: variation in packet arrival time.** A stream can receive plenty of data overall and still receive some of it too late. If AWDL is causing those delays, disabling it can help. Router congestion, packet loss, decoding, and display timing can still cause stutter independently.
 
-**Stop Stutter automates the workaround.** While Boost is on, its helper repeats `/sbin/ifconfig awdl0 down` every second because macOS can reactivate the interface. In Auto mode it brings AWDL back after the final watched app quits, so Apple sharing can resume.
+**Stop Stutter automates the workaround.** While Boost is on, its helper turns `awdl0` down and listens for the kernel’s interface notifications. macOS can reactivate AWDL at any time, so the helper switches it off again within milliseconds rather than leaving it active until a timer comes around. In Auto mode it brings AWDL back after the final watched app quits, so Apple sharing can resume.
 
 ### Try the difference on your Mac
 
@@ -75,14 +75,14 @@ The benefit depends on whether AWDL causes your stutter. Preset support means au
 ## What you get
 
 - **Automatic Boost.** Moonlight, GeForce NOW, Punktfunk, Parsec, and Steam Link are included. Add any `.app` with the native application picker.
-- **One-second enforcement.** The helper repeats `/sbin/ifconfig awdl0 down` every second while boost is active, because macOS can bring the interface back up.
+- **Instant enforcement.** When macOS brings AWDL back up during a session, the helper reacts to the kernel’s interface notification and turns it off again within milliseconds. A one-second check backs this up, and the interface is only touched when it is in the wrong state.
 - **Manual control.** Choose **Always on** to hold AWDL off, **Off** to stop boost, or **Auto** to follow your selected apps.
 - **States you can read at a glance.** Green **Boost is ON** means a verified active session. Blue **OFF / Auto waiting** is ready for your next app launch. Gray **OFF / Paused** means automation is disabled. Setup, transitions, and errors have their own labels.
 - **An explanation built in.** The **?** panel shows why AWDL can cause lag, how boost helps, and what happens to Apple sharing.
 - **Native Liquid Glass.** SwiftUI, real macOS 26+ glass controls, and native materials on macOS 14–15. Supports the system appearance and accessibility settings.
 - **A quiet menu bar companion.** Runs without a Dock icon. Close the main window and boost keeps working; use the menu bar icon to **Open Stop Stutter** again or **Quit**. Optional launch at login.
 - **Clear notifications.** Quiet banners when Boost starts, ends, or needs attention. No notification sounds over your stream.
-- **Recovery built in.** Disconnect recovery, six-second leases, and a durable recovery marker help prevent AWDL from being left off after a crash.
+- **Recovery built in.** Disconnect recovery, ten-second leases, and a durable recovery marker help prevent AWDL from being left off after a crash.
 - **No accounts, analytics, ads, or dependencies.** App choices stay in local preferences. Activity history exists only in memory.
 
 ## Install
@@ -130,9 +130,9 @@ AirDrop, peer-to-peer AirPlay, and some Continuity features may be unavailable w
 
 ## How it works
 
-![Automatic Boost lifecycle: a selected app launches, AWDL is disabled immediately and again every second, and AWDL is restored after the last selected app quits. The app renews a six-second lease every two seconds over authenticated XPC to a privileged helper.](docs/diagrams/boost-lifecycle.svg)
+![Automatic Boost lifecycle: a selected app launches, AWDL is disabled immediately and again whenever macOS turns it back on, and AWDL is restored after the last selected app quits. The app renews a ten-second lease every two seconds over authenticated XPC to a privileged helper.](docs/diagrams/boost-lifecycle.svg)
 
-**Two timers, two purposes.** The helper’s one-second loop reapplies the AWDL command. The app’s two-second heartbeat renews a six-second lease so a frozen app cannot request Boost forever. These are Stop Stutter’s timers, not AWDL protocol timings. Disconnection releases the lease immediately; restoration begins when no leases remain.
+**Events first, timers as a backup.** The kernel notifies the helper whenever an interface goes up or down, so a revived AWDL is turned off again at once; a one-second check catches anything missed and expires leases. The app’s two-second heartbeat renews a ten-second lease so a frozen app cannot request Boost forever. These are Stop Stutter’s timings, not AWDL protocol timings. Disconnection releases the lease immediately; restoration begins when no leases remain.
 
 The helper uses Apple’s [`SMAppService`](https://developer.apple.com/documentation/servicemanagement/smappservice) rather than a passwordless sudo rule. The app runs as your normal user; the small helper runs with permission to change AWDL. Both ends validate the peer’s Apple code signature, exact identifier, and signing team using the [public XPC code-signing APIs](https://developer.apple.com/documentation/foundation/nsxpcconnection/setcodesigningrequirement(_:)).
 
@@ -141,7 +141,7 @@ Only a boolean boost request crosses XPC. The helper accepts no command strings,
 ### If something interrupts your session
 
 - **Normal quit or XPC disconnect:** the helper releases the app’s lease and restores AWDL when no other lease remains.
-- **Frozen app:** a lease expires six seconds after the last heartbeat. The next one-second tick attempts recovery.
+- **Frozen app:** a lease expires ten seconds after the last heartbeat. The next one-second check attempts recovery.
 - **Helper crash:** launchd restarts the helper. A root-owned recovery marker tells it to restore AWDL before taking new work.
 - **Sleep or user switching:** the app releases boost. Continuous monotonic lease time also expires across sleep; active rules are evaluated again on wake.
 - **Restore failure:** the marker stays in place, the helper retries, and the app shows the error. It does not report success from an exit code alone.

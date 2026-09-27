@@ -38,7 +38,7 @@ struct AWDLExplanationView: View {
                     .accessibilityElement(children: .combine)
 
                     explanationStep("3", title: "Stop Stutter holds AWDL off while you play.",
-                        text: "Boost disables only AWDL, leaving your normal Wi-Fi on. Because macOS can turn AWDL back on, the helper disables it again every second. In Auto mode, it restores AWDL after the last watched app quits.")
+                        text: "Boost disables only AWDL, leaving your normal Wi-Fi on. macOS can turn AWDL back on, so the helper watches for that and switches it off again within milliseconds. In Auto mode, it restores AWDL after the last watched app quits.")
 
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: "airplay.audio").foregroundStyle(.orange).font(.system(size: 19))

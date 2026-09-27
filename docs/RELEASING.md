@@ -19,6 +19,8 @@ Do not publish an unnotarized helper build as a supported end-user download. Ad-
 
 ## Updating an installed helper
 
-For the initial release, updates are manual. In the installed version, turn boost off, remove the helper in Settings, and quit before replacing the app. Open the new version and enable its helper again. This follows Apple's requirement to re-register after the daemon executable or plist changes. Do not replace a live bundle during enforcement.
+From 0.1.1, quit Stop Stutter and replace the app. The helper notices its new executable once no Boost session is active and exits so launchd starts the new build, without re-approval. If the launchd plist changes, remove the helper in Settings before replacing the app, then enable it again in the new version so it is re-registered. Do not replace a live bundle during enforcement.
+
+A 0.1.0 helper cannot restart itself. After updating from 0.1.0, restart the Mac, or remove and enable the helper in Settings, to load the new helper; the app shows that notice until it does.
 
 CI intentionally has no signing credentials. A maintainer performs signing and notarization on a trusted Mac. Contributions never run privileged network commands in CI.

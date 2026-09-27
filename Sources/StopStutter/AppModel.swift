@@ -27,6 +27,7 @@ final class AppModel: ObservableObject {
     @Published var launchAtLogin = false
     @Published var busy = false
     @Published var helperConnected = false
+    @Published var helperOutdated = false
     @Published var interfaceState: InterfaceState = .unavailable
 
     private let client = HelperClient()
@@ -34,6 +35,7 @@ final class AppModel: ObservableObject {
     private let service = SMAppService.daemon(plistName: ServiceIdentity.daemonPlist)
     private var observers: [NSObjectProtocol] = []
     private var timer: Timer?
+    private var sessionActivity: NSObjectProtocol?
     private var syncing = false
     private var resync = false
     private var sleeping = false
@@ -71,9 +73,15 @@ final class AppModel: ObservableObject {
     }
     var sessionContext: String {
         if protected {
-            if mode == .on { return "Always on · you’re in control" }
-            let names = matchingApps.map(\.name).joined(separator: ", ")
-            return names.isEmpty ? "Boost is active on this Mac" : "Boosting \(names)"
+            let session: String
+            if mode == .on {
+                session = "Always on · you’re in control"
+            } else {
+                let names = matchingApps.map(\.name).joined(separator: ", ")
+                session = names.isEmpty ? "Boost is active on this Mac" : "Boosting \(names)"
+            }
+            guard let revivals = snapshot?.revivals, revivals > 0 else { return session }
+            return "\(session) · \(revivals) AWDL wake-up\(revivals == 1 ? "" : "s") blocked"
         }
         if protectionState == .waiting { return "Auto ready · \(apps.filter(\.enabled).count) apps selected" }
         if protectionState == .paused { return "Paused · automatic Boost is off" }
@@ -112,9 +120,12 @@ final class AppModel: ObservableObject {
                 Task { @MainActor in self?.sleeping = true; self?.requestSync() }
             })
         }
-        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+        // Common modes keep lease renewal running while a menu is open or a window is being resized.
+        let timer = Timer(timeInterval: 2, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.refresh(); self?.requestSync() }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        self.timer = timer
         addEvent("Ready to boost", "Your selected apps can start a Boost session automatically.", symbol: "waveform.path")
         requestSync()
         Task { await refreshNotificationPermission() }
@@ -213,6 +224,7 @@ final class AppModel: ObservableObject {
             client.invalidate()
             snapshot = nil
             helperConnected = false
+            helperOutdated = false
             error = nil
             refresh()
             addEvent("Helper removed", "The background helper has been removed.", symbol: "checkmark.circle")
@@ -243,13 +255,15 @@ final class AppModel: ObservableObject {
     }
 
     func requestSync() {
+        updateSessionActivity()
         guard !quitting, !suspendedForRemoval else { return }
         guard !syncing else { resync = true; return }
         guard ready else { helperConnected = false; return }
         syncing = true
+        let suppress = shouldSuppress
         Task {
             do {
-                let result = try await client.update(suppress: shouldSuppress)
+                let result = try await client.update(suppress: suppress)
                 snapshot = result
                 interfaceState = result.interface
                 helperConnected = true
@@ -261,8 +275,9 @@ final class AppModel: ObservableObject {
                     let detail = enabled
                         ? (mode == .on ? "Boost is ready for your session. It stays on until you change the mode or quit Stop Stutter." : "\(names.isEmpty ? "A watched app" : names) is running. Enjoy your Boost session.")
                         : "Your Boost session has ended. See you next game."
-                    // Only announce recovery after the interface was verified up.
-                    if enabled || (result.interface == .up && result.error == nil) {
+                    // A session ends only when Boost was released and the interface was verified up. While Boost
+                    // is still requested, AWDL briefly reported up is macOS reviving it; the helper corrects that.
+                    if enabled || (!suppress && result.interface == .up && result.error == nil) {
                         addEvent(title, detail, symbol: enabled ? "bolt.fill" : "bolt.slash")
                         notify(title, detail)
                         previousProtection = enabled
@@ -273,13 +288,34 @@ final class AppModel: ObservableObject {
                     notify("Boost needs attention", message)
                 }
                 lastEventError = result.error
+                let outdated = (result.helperRevision ?? 0) < ServiceIdentity.helperRevision
+                if outdated && !helperOutdated {
+                    addEvent("Helper update pending", Self.helperUpdateAdvice, symbol: "arrow.triangle.2.circlepath")
+                }
+                helperOutdated = outdated
             } catch {
                 helperConnected = false
                 self.error = "The helper is unavailable. Check its approval in System Settings. \(error.localizedDescription)"
-                client.invalidate()
+                // Invalidating releases this app's lease at once, so only a broken connection is replaced.
+                if !(error is HelperTimeout) { client.invalidate() }
             }
             syncing = false
             if resync { resync = false; requestSync() }
+        }
+    }
+
+    static let helperUpdateAdvice = "This version includes a faster helper. Restart your Mac, or use Remove Helper and then Enable Helper in Settings, to start using it."
+
+    /// App Nap can delay the heartbeat timer long enough for the helper's lease to expire mid-session,
+    /// which would bring AWDL back. Hold an activity only while Boost is requested.
+    private func updateSessionActivity() {
+        let requested = ready && shouldSuppress
+        if requested, sessionActivity == nil {
+            sessionActivity = ProcessInfo.processInfo.beginActivity(
+                options: .userInitiatedAllowingIdleSystemSleep, reason: "Renewing the Boost lease during a session")
+        } else if !requested, let activity = sessionActivity {
+            ProcessInfo.processInfo.endActivity(activity)
+            sessionActivity = nil
         }
     }
 

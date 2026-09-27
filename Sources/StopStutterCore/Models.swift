@@ -64,13 +64,19 @@ public struct HelperSnapshot: Codable {
     public let leaseCount: Int
     public let error: String?
     public let protocolVersion: Int
+    /// Times macOS turned AWDL back on during this session and the helper turned it off again.
+    /// Optional fields keep both directions of the XPC protocol compatible with 0.1.0 helpers.
+    public let revivals: Int?
+    public let helperRevision: Int?
 
-    public init(interface: InterfaceState, managing: Bool, leaseCount: Int, error: String?) {
+    public init(interface: InterfaceState, managing: Bool, leaseCount: Int, error: String?, revivals: Int = 0) {
         self.interface = interface
         self.managing = managing
         self.leaseCount = leaseCount
         self.error = error
         self.protocolVersion = ServiceIdentity.protocolVersion
+        self.revivals = revivals
+        self.helperRevision = ServiceIdentity.helperRevision
     }
 
     public var protected: Bool { managing && leaseCount > 0 && interface == .down && error == nil }
@@ -81,7 +87,9 @@ public enum ServiceIdentity {
     public static let helper = "io.github.burakgon.StopStutter.Helper"
     public static let daemonPlist = helper + ".plist"
     public static let protocolVersion = 1
-    public static let leaseDuration: TimeInterval = 6
+    /// Bumped when helper behavior changes, so the app can tell that an older helper is still running.
+    public static let helperRevision = 2
+    public static let leaseDuration: TimeInterval = 10
 }
 
 @objc public protocol AWDLHelperProtocol {

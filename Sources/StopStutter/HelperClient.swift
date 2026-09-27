@@ -9,9 +9,7 @@ final class HelperClient {
         let connection = try connect()
         return try await withCheckedThrowingContinuation { continuation in
             let reply = ReplyOnce(continuation)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                reply.finish(.failure(ControlError.connectionFailed("The helper did not respond. Check its approval in System Settings.")))
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { reply.finish(.failure(HelperTimeout())) }
             guard let proxy = connection.remoteObjectProxyWithErrorHandler({ error in
                 reply.finish(.failure(error))
             }) as? AWDLHelperProtocol else {
@@ -45,6 +43,11 @@ final class HelperClient {
         self.connection = connection
         return connection
     }
+}
+
+/// A slow reply is not a broken connection. Keeping the connection keeps the helper's lease for this app.
+struct HelperTimeout: LocalizedError {
+    var errorDescription: String? { "The helper did not respond. Check its approval in System Settings." }
 }
 
 /// XPC can race a timeout, invalidation and reply. Resume the continuation exactly once.

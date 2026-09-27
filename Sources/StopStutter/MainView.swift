@@ -308,10 +308,14 @@ struct MainView: View {
                             .buttonStyle(PrimaryGlassButton())
                     }
                 }.disabled(model.busy)
+                if model.ready && model.helperOutdated {
+                    Label(AppModel.helperUpdateAdvice, systemImage: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 11)).foregroundStyle(.orange)
+                }
                 if let error = model.error { Text(error).font(.system(size: 11)).foregroundStyle(.orange).textSelection(.enabled) }
             }.padding(22).modifier(PanelSurface())
             HStack {
-                Text("Stop Stutter 0.1.0 · MIT License").font(.system(size: 11)).foregroundStyle(.tertiary)
+                Text("Stop Stutter 0.1.1 · MIT License").font(.system(size: 11)).foregroundStyle(.tertiary)
                 Spacer()
                 Link("Source & feedback ↗", destination: URL(string: "https://github.com/burakgon/stop-stutter")!)
                     .font(.system(size: 11))

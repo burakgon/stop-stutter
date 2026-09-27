@@ -18,6 +18,8 @@ if [[ "${UNIVERSAL:-0}" == 1 ]]; then build_args+=(--arch arm64 --arch x86_64); 
 
 swift build "${build_args[@]}"
 bin_dir="$(swift build "${build_args[@]}" --show-bin-path)"
+# Start from an empty bundle so files from an earlier build, such as a stapled ticket, never carry over.
+rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Library/LaunchDaemons"
 cp "$bin_dir/StopStutter" "$app/Contents/MacOS/StopStutter"
 cp "$bin_dir/StopStutterHelper" "$app/Contents/MacOS/StopStutterHelper"

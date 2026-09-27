@@ -172,14 +172,15 @@ def packet_timing():
 
 def session_lifecycle():
     d = Diagram(878, "Automatic Boost session and helper timing", "A selected app launches and Boost requests AWDL down "
-                "immediately. A privileged helper repeats ifconfig awdl0 down once per second because macOS can reactivate "
-                "AWDL. In Auto mode, the last selected app quitting releases Boost and the helper restores AWDL up. "
-                "The normal-user app renews an authenticated XPC lease every two seconds. A lease expires after six seconds "
-                "without renewal; the next helper tick attempts restoration when no leases remain.")
+                "immediately. macOS can reactivate AWDL, so a privileged helper listens for the kernel's interface events "
+                "and turns AWDL down again within milliseconds, with a one-second check as a backup. In Auto mode, the "
+                "last selected app quitting releases Boost and the helper restores AWDL up. The normal-user app renews an "
+                "authenticated XPC lease every two seconds. A lease expires after ten seconds without renewal; the next "
+                "helper check attempts restoration when no leases remain.")
     d.heading("03", "AUTOMATION", "One session. No repeated commands.",
               "Choose your apps once. In Auto mode, Boost follows them from launch to quit.")
     steps = [(40, "01", "Open a selected app", "Request AWDL down immediately.", BLUE),
-             (452, "02", "Keep playing", "Repeat down every second.", MINT),
+             (452, "02", "Keep playing", "Off again as soon as it returns.", MINT),
              (864, "03", "Quit the last selected app", "Release Boost and restore AWDL.", BLUE)]
     for x, number, title, body, color in steps:
         d.rect(x, 183, 376, 157, PANEL, BORDER, 20)
@@ -191,28 +192,31 @@ def session_lifecycle():
     d.rect(40, 365, 1200, 206, PANEL, BORDER, 24)
     d.text(68, 405, "WHY ONCE IS NOT ENOUGH", 18, MINT, 650)
     d.text(68, 447, "macOS can bring AWDL back up.", 28, WHITE, 650)
-    d.text(68, 483, "The helper keeps reapplying down", 22, MUTED)
-    d.text(68, 514, "for as long as Boost is requested.", 22, MUTED)
+    d.text(68, 483, "The kernel tells the helper at once,", 22, MUTED)
+    d.text(68, 514, "and it turns AWDL off in milliseconds.", 22, MUTED)
     d.line(559, 449, 1007, 449, MINT, 3)
     d.line(1007, 449, 1187, 449, BLUE, 3, True)
-    for i, x in enumerate([571, 676, 781, 886, 991]):
-        d.circle(x, 449, 8, MINT)
-        d.text(x, 432, f"{i}s", 18, MUTED, anchor="middle", mono=True)
-        d.text(x, 486, "DOWN", 18, MINT, 650, "middle", mono=True)
+    d.circle(571, 449, 8, MINT)
+    d.text(571, 432, "start", 18, MUTED, anchor="middle")
+    d.text(571, 486, "DOWN", 18, MINT, 650, "middle", mono=True)
+    for x in [741, 911]:
+        d.circle(x, 449, 8, AMBER)
+        d.text(x, 432, "macOS revives", 18, AMBER, anchor="middle")
+        d.text(x, 486, "DOWN again", 18, MINT, 650, "middle", mono=True)
     d.circle(1165, 449, 8, BLUE)
     d.text(1165, 432, "last quit", 18, MUTED, anchor="middle")
     d.text(1165, 486, "UP", 18, BLUE, 650, "middle", mono=True)
-    d.text(559, 543, "Repeating command cadence, not AWDL’s protocol schedule.", 20, MUTED)
+    d.text(559, 543, "Corrections follow kernel events; a 1s check is the backup.", 20, MUTED)
     d.rect(40, 595, 1200, 169, PANEL, BORDER, 24)
-    d.text(68, 632, "TWO CLOCKS, DIFFERENT JOBS", 18, MUTED, 650)
+    d.text(68, 632, "TWO PROCESSES, DIFFERENT JOBS", 18, MUTED, 650)
     d.text(68, 675, "SwiftUI app", 27, WHITE, 650)
     d.text(68, 712, "Normal user • renews lease every 2s", 21, MUTED)
     d.arrow(469, 672, 774, MINT)
     d.text(621, 659, "Authenticated XPC", 21, MINT, 550, "middle")
     d.text(621, 712, "Boolean Boost request", 19, MUTED, anchor="middle")
     d.text(810, 675, "macOS-managed helper", 27, WHITE, 650)
-    d.text(810, 712, "Privileged • applies down every 1s", 21, MUTED)
-    d.text(40, 810, "App stops responding? Its lease expires after 6s without renewal; the next tick attempts restore.", 23, WHITE, 500)
+    d.text(810, 712, "Privileged • reacts to interface events", 21, MUTED)
+    d.text(40, 810, "App stops responding? Its lease expires after 10s without renewal; the next check attempts restore.", 23, WHITE, 500)
     d.text(40, 851, "Restore waits for all leases to end. Status is checked; failed restoration is retried. Timers are approximate.", 21, MUTED)
     d.save("boost-lifecycle.svg")
 
