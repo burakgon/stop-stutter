@@ -387,14 +387,7 @@ struct MainView: View {
 private struct AppIconView: View {
     let app: WatchedApp
     @ObservedObject var model: AppModel
-    private var officialIcon: NSImage? {
-        if let url = model.appURL(app) { return NSWorkspace.shared.icon(forFile: url.path) }
-        for ext in ["icns", "jpg"] {
-            if let url = Bundle.main.url(forResource: app.id, withExtension: ext, subdirectory: "ClientIcons"),
-               let icon = NSImage(contentsOf: url) { return icon }
-        }
-        return nil
-    }
+    private var officialIcon: NSImage? { model.icon(for: app) }
 
     var body: some View {
         if let icon = officialIcon {
