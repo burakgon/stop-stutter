@@ -132,10 +132,17 @@ final class AppModel: ObservableObject {
     }
 
     func refresh() {
-        running = Set(NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier))
-        helperStatus = service.status
-        launchAtLogin = SMAppService.mainApp.status == .enabled
-        interfaceState = (try? SystemAWDLDriver().state()) ?? .unavailable
+        assign(\.running, Set(NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)))
+        assign(\.helperStatus, service.status)
+        assign(\.launchAtLogin, SMAppService.mainApp.status == .enabled)
+        assign(\.interfaceState, (try? SystemAWDLDriver().state()) ?? .unavailable)
+    }
+
+    /// `@Published` announces every write, even an unchanged value, and each announcement makes SwiftUI rebuild
+    /// and re-lay out every view observing the model. The 2 s heartbeat rewrites the same values almost every
+    /// tick, so only write when something actually changed.
+    private func assign<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<AppModel, T>, _ value: T) {
+        if self[keyPath: keyPath] != value { self[keyPath: keyPath] = value }
     }
 
     func setMode(_ value: ProtectionMode) {
@@ -186,6 +193,25 @@ final class AppModel: ObservableObject {
         if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: app.id) { return url }
         guard let path = app.path, Bundle(path: path)?.bundleIdentifier == app.id else { return nil }
         return URL(fileURLWithPath: path)
+    }
+
+    /// Icons are looked up once per app instead of on every render. A miss is cached too, until the app's
+    /// install location changes, so a missing app doesn't hit Launch Services on each redraw.
+    private var iconCache: [String: (url: URL?, icon: NSImage?)] = [:]
+
+    func icon(for app: WatchedApp) -> NSImage? {
+        let url = appURL(app)
+        if let cached = iconCache[app.id], cached.url == url { return cached.icon }
+        var icon: NSImage?
+        if let url { icon = NSWorkspace.shared.icon(forFile: url.path) }
+        else {
+            for ext in ["icns", "jpg"] {
+                if let resource = Bundle.main.url(forResource: app.id, withExtension: ext, subdirectory: "ClientIcons"),
+                   let image = NSImage(contentsOf: resource) { icon = image; break }
+            }
+        }
+        iconCache[app.id] = (url, icon)
+        return icon
     }
 
     func enableHelper() async {
@@ -264,16 +290,16 @@ final class AppModel: ObservableObject {
         updateSessionActivity()
         guard !quitting, !suspendedForRemoval else { return }
         guard !syncing else { resync = true; return }
-        guard ready else { helperConnected = false; return }
+        guard ready else { assign(\.helperConnected, false); return }
         syncing = true
         let suppress = shouldSuppress
         Task {
             do {
                 let result = try await client.update(suppress: suppress)
-                snapshot = result
-                interfaceState = result.interface
-                helperConnected = true
-                error = result.error
+                assign(\.snapshot, result)
+                assign(\.interfaceState, result.interface)
+                assign(\.helperConnected, true)
+                assign(\.error, result.error)
                 if result.protected != previousProtection {
                     let enabled = result.protected
                     let names = matchingApps.map(\.name).joined(separator: ", ")
@@ -298,10 +324,10 @@ final class AppModel: ObservableObject {
                 if outdated && !helperOutdated {
                     addEvent("Helper update pending", Self.helperUpdateAdvice, symbol: "arrow.triangle.2.circlepath")
                 }
-                helperOutdated = outdated
+                assign(\.helperOutdated, outdated)
             } catch {
-                helperConnected = false
-                self.error = Self.unavailableMessage(for: error)
+                assign(\.helperConnected, false)
+                assign(\.error, Self.unavailableMessage(for: error))
                 // Invalidating releases this app's lease at once, so only a broken connection is replaced.
                 if !(error is HelperTimeout) { client.invalidate() }
             }

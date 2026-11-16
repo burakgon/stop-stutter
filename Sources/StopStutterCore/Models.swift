@@ -58,7 +58,7 @@ public enum InterfaceState: String, Codable {
     case up, down, unavailable
 }
 
-public struct HelperSnapshot: Codable {
+public struct HelperSnapshot: Codable, Equatable {
     public let interface: InterfaceState
     public let managing: Bool
     public let leaseCount: Int
